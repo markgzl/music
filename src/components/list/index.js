@@ -1,6 +1,9 @@
 import React, { memo } from 'react'
+import LazyLoad from 'react-lazyload'
 import { ListWrap, List, ListItem } from './style'
 import { getCount } from '../../utils/count'
+
+
 
 const RecommendList =({recommendList=[]})=>{
     
@@ -12,7 +15,9 @@ const RecommendList =({recommendList=[]})=>{
                     recommendList.map(item=>(
                         <ListItem key={item.id}>
                             <div className='img-wrap'>
-                                <img src={item.picUrl} width='100%' height='100%' alt='推荐' />
+                            <LazyLoad placeholder={<img width="100%" height="100%" src={require ('./music.png')} alt="music"/>}>
+                                    <img src={item.picUrl} width='100%' height='100%' alt='推荐' />
+                                </LazyLoad>
                             </div>
                             <div className='play-count'>
                                 <i className="iconfont play">&#xe885;</i>

@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react'
 import Slider from '../../components/swiper'
 import RecommendList from '../../components/list'
-import Scroll from '../../components/scroll'
+import Scroll from '../../baseUI/scroll'
+import Loading from '../../baseUI/loading'
 import styled from 'styled-components'
-import { connect, useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import * as actions from './store/action'
+import { forceCheck } from 'react-lazyload';
+
 
 const ContentWrap = styled.div`
 	position: fixed;
@@ -18,9 +21,10 @@ const ContentWrap = styled.div`
 
 function Recommend(){
 
-	const {bannerList, recommendList} = useSelector(state=>({
+	const {bannerList, recommendList, enterLoading} = useSelector(state=>({
 		bannerList: state.getIn(['recommend', 'bannerList']),
-		recommendList: state.getIn(['recommend', 'recommendList'])
+		recommendList: state.getIn(['recommend', 'recommendList']),
+		enterLoading: state.getIn(['recommend', 'enterLoading'])
 	}))
 
 	const dispatch = useDispatch()
@@ -33,10 +37,11 @@ function Recommend(){
 	const recommendListJS = recommendList ? recommendList.toJS() : [];
 	return (
 		<ContentWrap>
-			<Scroll>
+			<Scroll onScroll={forceCheck}>
 				<div>
 					<Slider bannerList={bannerListJS} />
 					<RecommendList recommendList={recommendListJS} />
+					{ enterLoading && <Loading />}
 				</div>
 			</Scroll>
 			

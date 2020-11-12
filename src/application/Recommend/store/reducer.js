@@ -3,7 +3,8 @@ import { fromJS } from 'immutable'
 
 const initState = fromJS({
 	bannerList: [],
-	recommendList: []
+	recommendList: [],
+	enterLoading: true
 })
 
 export default (state=initState, action) => {
@@ -12,6 +13,8 @@ export default (state=initState, action) => {
 			return state.set('bannerList', action.data)
 		case actionTypes.CHANGE_RECOMMEND_LIST: 
 			return state.set('recommendList', action.data)
+		case actionTypes.CHANGE_RECOMMEND_LOADING:
+			return state.set('enterLoading', action.data)
 		default:
 			return state
 	}
