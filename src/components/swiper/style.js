@@ -4,16 +4,15 @@ import style from '../../assets/global-style'
 export const SliderContainer = styled.div`
 	position: relative;
 	width: 100%;
-	height: 100%;
+	height: 160px;
 	margin: auto;
 	background-color: white;
 	&:after{
 		position: absolute;
 		content: "";
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 45px;
+		top: -1000px;
+		height: 1120px;
+		width: 100%;
 		background-color: ${style['theme-color']};
 	}
 
