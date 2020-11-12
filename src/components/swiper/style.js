@@ -6,7 +6,7 @@ export const SliderContainer = styled.div`
 	width: 100%;
 	height: 160px;
 	margin: auto;
-	background-color: white;
+
 	&:after{
 		position: absolute;
 		content: "";
