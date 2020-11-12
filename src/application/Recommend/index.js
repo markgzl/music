@@ -1,8 +1,11 @@
-import React, { useRef } from 'react'
+import React, { useEffect } from 'react'
 import Slider from '../../components/swiper'
 import RecommendList from '../../components/list'
 import Scroll from '../../components/scroll'
 import styled from 'styled-components'
+import { connect, useDispatch, useSelector } from 'react-redux'
+import * as actions from './store/action'
+
 const ContentWrap = styled.div`
 	position: fixed;
 	top: 94px;
@@ -14,26 +17,48 @@ const ContentWrap = styled.div`
 `
 
 function Recommend(){
-	const bannerList = [1,2,3,4,5].map(item=>({key: item, imageUrl: 'http://p1.music.126.net/ZYLJ2oZn74yUz5x8NBGkVA==/109951164331219056.jpg'}))
-	const recommendList = [1,2,3,4,5,6,7,8,9,10,11,12,123,1452,2698,1524].map(item=>({
-		id: item,
-		name: '凤凰传奇'+ item,
-		count: Math.floor(Math.random() * 100 * item * 3),
-		picUrl: "https://p1.music.126.net/fhmefjUfMD-8qtj3JKeHbA==/18999560928537533.jpg?param=300x300",
+
+	const {bannerList, recommendList} = useSelector(state=>({
+		bannerList: state.getIn(['recommend', 'bannerList']),
+		recommendList: state.getIn(['recommend', 'recommendList'])
 	}))
 
+	const dispatch = useDispatch()
+	useEffect(()=>{
+		!bannerList.size && dispatch(actions.getBannerList())
+		!recommendList.size && dispatch(actions.getRecommend())
+	},[])
+
+	const bannerListJS = bannerList ? bannerList.toJS() : [];
+	const recommendListJS = recommendList ? recommendList.toJS() : [];
 	return (
 		<ContentWrap>
 			<Scroll>
 				<div>
-					<Slider bannerList={bannerList} />
-					<RecommendList recommendList={recommendList} />
+					<Slider bannerList={bannerListJS} />
+					<RecommendList recommendList={recommendListJS} />
 				</div>
 			</Scroll>
 			
 		</ContentWrap>
 	)
 }
+// 映射 Redux 全局的 state 到组件的 props 上
+// const mapStateToProps = (state) => ({ 
+// 	// 不要在这里将数据 toJS
+//   // 不然每次 diff 比对 props 的时候都是不一样的引用，还是导致不必要的重渲染，属于滥用 immutable
+// 	bannerList: state.getIn(['recommend', 'bannerList']),
+// 	recommendList: state.getIn(['recommend', 'recommendList'])
+// })
 
-
-export default Recommend
+// // 映射 dispatch 到 props 上
+// const mapDispathToProps =(dispatch)=>({
+// 	getBannerDispatch(){
+// 		dispatch(actions.getBannerList())
+// 	},
+// 	getRecommendListDispatch(){
+// 		dispatch(actions.getRecommend())
+// 	}
+// })
+// export default connect(mapStateToProps)(React.memo(Recommend))
+export default React.memo(Recommend)

@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import { ListWrap, List, ListItem } from './style'
+import { getCount } from '../../utils/count'
 
 const RecommendList =({recommendList=[]})=>{
     
@@ -15,7 +16,7 @@ const RecommendList =({recommendList=[]})=>{
                             </div>
                             <div className='play-count'>
                                 <i className="iconfont play">&#xe885;</i>
-                                <span className='count'>{item.count}</span>
+                                <span className='count'>{getCount(item.playCount)}</span>
                             </div>
                             <div className='desc'>{item.name}</div>
                         </ListItem>

@@ -36,6 +36,7 @@
     ]
   },
   "devDependencies": {
+    "axios": "^0.21.0",
     "better-scroll": "^2.0.0-beta.10",
     "immutable": "^4.0.0-rc.12",
     "react-redux": "^7.2.2",
