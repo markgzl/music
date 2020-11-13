@@ -6,25 +6,17 @@ import { CatScrollWrap, SingerListWrap, SingerBox } from './style'
 import Scroll from '../../baseUI/scroll'
 import Loading from '../../baseUI/loading'
 import * as actions from './store/actions'
+import LazyLoad, { forceCheck } from 'react-lazyload'
 
-function renderSingerList(list){
-	return ( <div>
-		{list.map(singer=>(
-			<SingerBox key={singer.name}>
-				<div className='img-wrap'>
-					<img src={singer.picUrl+'?param=150x150'} width='100%' height='100%' alt={singer.name} />
-				</div>
-				<div className='name'>{singer.name}</div>
-			</SingerBox>
-		)) 	}
-	</div> )
-}
+
 
 function Singers(){
-	const {singerList, page, enterLoading} = useSelector(state=>({
+	const {singerList, page, enterLoading, pullUpLoading, pullDownLoading} = useSelector(state=>({
 		singerList: state.getIn(['singer','singerList']),
 		page: state.getIn(['singer','page']),
 		enterLoading: state.getIn(['singer','enterLoading']),
+		pullUpLoading: state.getIn(['singer','pullUpLoading']),
+		pullDownLoading: state.getIn(['singer','pullDownLoading']),
 	}))
 	const [ cat, setCat ] = useState('')
 	const [ alpha, setAlpha ] = useState('')
@@ -38,19 +30,15 @@ function Singers(){
 	}
 	// 获取热门歌手列表
 	const getHotSingerList = () => {
+
 		dispatch(actions.dispatchHotSinger())
 	}
-
-	const onPagePullUp = () => {
-		dispatch(actions.changePage(page+1))
-		if(!cat && !alpha && !area){
-			getHotSingerList()
-		}else{
-			getSingerList(cat,alpha, area)
-		}
-	}
 	useEffect(()=>{
-		dispatch(actions.dispatchHotSinger(page))
+		if(!singerList.size){
+			
+			dispatch(actions.changePage(0))
+			dispatch(actions.dispatchHotSinger())
+		}
 	},[])
 
 	const handleCatClick = (val) => {
@@ -69,7 +57,37 @@ function Singers(){
 	const singerListJS = singerList.size ? singerList.toJS() : []
 
 	const onScrollPullUp = () => {
-		onPagePullUp()
+		dispatch(actions.changePage(page+1))
+		dispatch(actions.changePullUpLoading(true))
+		if(!cat && !alpha && !area){
+			getHotSingerList()
+		}else{
+			getSingerList(cat,alpha, area)
+		}
+	}
+	const onScrollPullDown = () => {
+		dispatch(actions.changePage(0))
+		dispatch(actions.changePullDownLoading(true))
+		if(!cat && !alpha && !area){
+			getHotSingerList()
+		}else{
+			getSingerList(cat,alpha, area)
+		}
+	}
+
+	function renderSingerList(){
+		return ( <div>
+			{singerListJS.map(singer=>(
+				<SingerBox key={singer.name}>
+					<div className='img-wrap'>
+						<LazyLoad placeholder={<img src={require('./singer.png')} width='100%' height='100%' alt={singer.name} />}>
+							<img src={singer.picUrl+'?param=150x150'} width='100%' height='100%' alt={singer.name} />
+						</LazyLoad>
+					</div>
+					<div className='name'>{singer.name}</div>
+				</SingerBox>
+			)) 	}
+		</div> )
 	}
 
 	return (
@@ -79,9 +97,16 @@ function Singers(){
 				<HorizenScroll curVal={area} list={areatypes} title={'地区:'} onItemClick={handleAreaClick} />
 				<HorizenScroll curVal={alpha} list={alphaTypes} title={'歌手首字母:'} onItemClick={handleAlphaClick} />
 			</CatScrollWrap>
+			{enterLoading && <Loading /> }
 			<SingerListWrap>
-				<Scroll pullUp={onScrollPullUp}>
-					{renderSingerList(singerListJS)}					
+				<Scroll 
+					pullUp={onScrollPullUp}
+					pullDown={onScrollPullDown}
+					pullUpLoading={pullUpLoading}
+					pullDownLoading={pullDownLoading}
+					onScroll={forceCheck}
+				>
+					{renderSingerList()}					
 				</Scroll>
 			</SingerListWrap>
 

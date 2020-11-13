@@ -11,7 +11,7 @@ const dance = keyframes`
 `
 
 export const Loading = styled.div`
-	height: 10px;
+	height: 30px;
 	width: 100%;
 	text-align: center;
 	font-size: 10px;
@@ -19,6 +19,9 @@ export const Loading = styled.div`
 	align-items: center;
 	justify-content: center;
 	color: ${style['font-color-desc']};
+	top: 0;
+	position: absolute;
+	left: 0;
 	div{
 		height: 10px;
 		width: 1px;

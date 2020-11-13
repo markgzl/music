@@ -1,20 +1,38 @@
-import React, {forwardRef, useState, useEffect, useRef, useImperativeHandle  } from 'react'
+import React, {forwardRef, useState, useEffect, useRef, useImperativeHandle, useMemo  } from 'react'
 import BScroll from 'better-scroll'
 import ProtoTypes from 'prop-types'
 import styled from 'styled-components'
 import Loading2 from '../loading2'
+import { debounce } from '../../utils/utils'
 
 const ScrollContainer = styled.div`
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+	position: relative;
+`
+const ScrollBottomLoading = styled.div`
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	z-index: 101;
+	height: 30px;
 `
 // forwardRef 实现 ref 的透传， 可实现父组件操作子组件内的 ref
 const Scroll = forwardRef((props, ref) => {
 	const [bScroll, setBScroll] = useState(null)
 	const scorollContainerRef = useRef()
-	const { direction, click, refresh, bounceDown, bounceTop, onScroll, pullDown, pullUp } = props
+	const { direction, click, refresh, bounceDown, bounceTop, onScroll, pullDown, pullUp, pullUpLoading, pullDownLoading } = props
 
+	// 防抖
+	let pullUpDebounce = useMemo(()=>{
+		return debounce(pullUp, 300)
+	},[pullUp])
+		// 防抖
+		let pullDownDebounce = useMemo(()=>{
+			return debounce(pullDown, 300)
+		},[pullDown])
 	// scroll 初始化
 	useEffect(()=>{
 		const scroll = new BScroll(scorollContainerRef.current, {
@@ -48,30 +66,31 @@ const Scroll = forwardRef((props, ref) => {
 	// scrcoll 绑定事件
 	useEffect(()=>{
 		if(!bScroll || !pullUp) return 
-		bScroll.on('scrollEnd',()=>{
-			 // 判断是否滑动到了底部
+		const handlePullUp = () => {
+			//判断是否滑动到了底部
 			if(bScroll.y <= bScroll.maxScrollY + 100){
-				pullUp()
+				pullUpDebounce()
 			}
-		})
+		}
+		bScroll.on('touchEnd',handlePullUp)
 		return () => {
-			bScroll.off('scrollEnd')
+			bScroll.off('touchEnd', handlePullUp)
 		}
 
-	},[pullUp, onScroll])
+	},[pullUp, pullUpDebounce, onScroll])
 	// scrcoll 绑定事件
 	useEffect(()=>{
 		if(!bScroll || !pullDown) return 
-		bScroll.on('scrollEnd',(position)=>{
-			// 判断用户下拉
+		const handlePullDown = (position) => {
 			if(position.y > 50){
-				pullDown()
+				pullDownDebounce()
 			}
-		})
-		return () => {
-			bScroll.off('scrollEnd')
 		}
-	},[pullDown, onScroll])
+		bScroll.on('touchEnd',handlePullDown)
+		return () => {
+			bScroll.off('touchEnd', handlePullDown)
+		}
+	},[pullDown, pullDownDebounce, onScroll])
 
 	// 刷新
 	useEffect(()=>{
@@ -95,10 +114,13 @@ const Scroll = forwardRef((props, ref) => {
 			}
 		})
 	)
-
 	return (
 		<ScrollContainer ref={scorollContainerRef}>
+			{/* 下拉刷新 */}
+			{pullDownLoading && <Loading2 />  }	
 			{props.children}
+			{/* 滑到底部 */}
+			{pullUpLoading && 	<ScrollBottomLoading><Loading2 /> </ScrollBottomLoading> }	
 		</ScrollContainer>
 	)
 })

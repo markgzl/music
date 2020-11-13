@@ -39,13 +39,14 @@ export const dispatchSingerList = ({cat, alpha, area}) => {
 	return (dispatch, getState) => {
 		const page = getState().getIn(['singer', 'page']);
 		const singerList = getState().getIn(['singer', 'singerList']).toJS();
-		getSingerListRequest({cat, alpha, page, area}).then(res=>{
+		getSingerListRequest({cat, alpha, page: page*50, area}).then(res=>{
+			dispatch(changePullUpLoading(false))
+			dispatch(changeEnterLoading(false))
+			dispatch(changePullDownLoading(false))
 			if(page===0){
 				dispatch(changeSinger(res.artists))
-				dispatch(changeEnterLoading(false))
 			}else{
 				dispatch(changeSinger([...singerList,...res.artists]))
-				dispatch(changePullUpLoading(false))
 			}
 		}).catch(() => {
 			console.log('歌手数据获取失败');
@@ -53,18 +54,19 @@ export const dispatchSingerList = ({cat, alpha, area}) => {
 	}
 }
 
-export const dispatchHotSinger = (count) => {
+export const dispatchHotSinger = () => {
 	return (dispatch, getState) => {
 		const page = getState().getIn(['singer', 'page'])
 		const singerList = getState().getIn(['singer','singerList']).toJS()
-		getHotSingerListRequest(count)
+		getHotSingerListRequest(page*50)
 		.then(res=>{
+			dispatch(changePullUpLoading(false))
+			dispatch(changeEnterLoading(false))
+			dispatch(changePullDownLoading(false))
 			if(page===0){
 				dispatch(changeSinger(res.artists))
-				dispatch(changeEnterLoading(false))
 			}else{
 				dispatch(changeSinger([...singerList,...res.artists]))
-				dispatch(changePullUpLoading(false))
 			}
 			
 		})
