@@ -2,6 +2,7 @@ import React, {forwardRef, useState, useEffect, useRef, useImperativeHandle  } f
 import BScroll from 'better-scroll'
 import ProtoTypes from 'prop-types'
 import styled from 'styled-components'
+import Loading2 from '../loading2'
 
 const ScrollContainer = styled.div`
 	width: 100%;

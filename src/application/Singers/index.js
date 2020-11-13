@@ -1,58 +1,87 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import HorizenScroll from '../../baseUI/horizen-item'
-import { categoryTypes, alphaTypes } from '../../api/config'
+import { categoryTypes, alphaTypes, areatypes } from '../../api/config'
 import { CatScrollWrap, SingerListWrap, SingerBox } from './style'
 import Scroll from '../../baseUI/scroll'
-
-const singerList = [1, 2,3, 4,5,6,7,8,9,10,11,12].map (item => {
-	return {
-	  picUrl: "https://p2.music.126.net/uTwOm8AEFFX_BYHvfvFcmQ==/109951164232057952.jpg",
-	  name: "隔壁老樊",
-	  accountId: 277313426,
-	  key: item
-	}
-  }); 
+import Loading from '../../baseUI/loading'
+import * as actions from './store/actions'
 
 function renderSingerList(list){
-	return (
-		<div>
-			{
-				list.map(singer=>(
-					<SingerBox key={singer.key}>
-						<div className='img-wrap'>
-							<img src={singer.picUrl} width='100%' height='100%' alt={singer.name} />
-						</div>
-						<div className='name'>{singer.name}</div>
-					</SingerBox>
-				))
-			}
-		</div>
-	)
+	return ( <div>
+		{list.map(singer=>(
+			<SingerBox key={singer.name}>
+				<div className='img-wrap'>
+					<img src={singer.picUrl+'?param=150x150'} width='100%' height='100%' alt={singer.name} />
+				</div>
+				<div className='name'>{singer.name}</div>
+			</SingerBox>
+		)) 	}
+	</div> )
 }
 
-  
 function Singers(){
+	const {singerList, page, enterLoading} = useSelector(state=>({
+		singerList: state.getIn(['singer','singerList']),
+		page: state.getIn(['singer','page']),
+		enterLoading: state.getIn(['singer','enterLoading']),
+	}))
 	const [ cat, setCat ] = useState('')
 	const [ alpha, setAlpha ] = useState('')
-	useEffect(()=>{
+	const [ area, setArea ] = useState('')
+	const dispatch = useDispatch()
+	// 获取歌手列表
+	const getSingerList = (val1, val2, val3) => {
+		dispatch(actions.changePage(0))
+		dispatch(actions.changeEnterLoading(true))
+		dispatch(actions.dispatchSingerList({cat: val1, alpha: val2, area: val3}))
+	}
+	// 获取热门歌手列表
+	const getHotSingerList = () => {
+		dispatch(actions.dispatchHotSinger())
+	}
 
-	})
+	const onPagePullUp = () => {
+		dispatch(actions.changePage(page+1))
+		if(!cat && !alpha && !area){
+			getHotSingerList()
+		}else{
+			getSingerList(cat,alpha, area)
+		}
+	}
+	useEffect(()=>{
+		dispatch(actions.dispatchHotSinger(page))
+	},[])
+
 	const handleCatClick = (val) => {
-		console.log(val)
+		getSingerList(val, alpha, area)
 		setCat(val)
 	}
 	const handleAlphaClick = (val) => {
+		getSingerList(cat, val,area)
 		setAlpha(val)
 	}
+	const handleAreaClick = (val) => {
+		getSingerList(cat, alpha, val)
+		setArea(val)
+	}
+
+	const singerListJS = singerList.size ? singerList.toJS() : []
+
+	const onScrollPullUp = () => {
+		onPagePullUp()
+	}
+
 	return (
 		<div>
 			<CatScrollWrap>
-				<HorizenScroll curVal={cat} list={categoryTypes} title={'分类(默认分类):'} onItemClick={handleCatClick}  />
+				<HorizenScroll curVal={cat} list={categoryTypes} title={'默认分类:'} onItemClick={handleCatClick}  />
+				<HorizenScroll curVal={area} list={areatypes} title={'地区:'} onItemClick={handleAreaClick} />
 				<HorizenScroll curVal={alpha} list={alphaTypes} title={'歌手首字母:'} onItemClick={handleAlphaClick} />
 			</CatScrollWrap>
 			<SingerListWrap>
-				<Scroll>
-					{renderSingerList(singerList)}					
+				<Scroll pullUp={onScrollPullUp}>
+					{renderSingerList(singerListJS)}					
 				</Scroll>
 			</SingerListWrap>
 

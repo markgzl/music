@@ -20,8 +20,8 @@ const LoadingAnimate = styled.div`
 		bottom: 0;
 		margin: auto;
 		z-index: 1024;
-		width: 100px;
-		height: 100px;
+		width: 60px;
+		height: 60px;
 		border-radius: 50%;
 		opacity: 0.6;
 		background-color: ${style['theme-color']};

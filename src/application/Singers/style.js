@@ -11,7 +11,7 @@ export const CatScrollWrap = styled.div`
 
 export const SingerListWrap = styled.div`
 	position: fixed;
-	top: 150px;
+	top: 175px;
 	bottom: 0;
 	width: 100%;
 	box-sizing: border-box;

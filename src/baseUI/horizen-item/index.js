@@ -8,7 +8,7 @@ const HorizenScroll = ({title, curVal, list, onItemClick }) => {
 	useEffect(()=>{
 		let catDom = catRef.current
 		let childEle = catDom.querySelectorAll('span')
-		let childWidth = 0
+		let childWidth = 15
 		Array.from(childEle).forEach(ele=>[
 			childWidth += ele.offsetWidth
 		])

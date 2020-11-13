@@ -9,7 +9,7 @@ export const HorizenList = styled.div`
   >span:first-of-type {
     display: block;
     flex: 0 0 auto;
-    padding: 5px 0;
+    padding: 5px  0;
     margin-right: 5px;
     color: grey;
     font-size: ${style ["font-size-m"]};
