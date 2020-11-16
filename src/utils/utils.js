@@ -10,3 +10,11 @@ export const debounce = (func, delay=300) => {
 		}, delay)
 	}
 }
+
+export const filterIndex = (list=[]) => {
+	for(let i=0; i<list.length-1; i++){
+		if(list[i].tracks && list[i].tracks.length && !list[i+1].tracks.length){
+			return i + 1
+		}
+	}
+}
