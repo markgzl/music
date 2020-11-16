@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import * as actions from './store/action'
 import { forceCheck } from 'react-lazyload';
+import { renderRoutes } from 'react-router-config';
 
 
 const ContentWrap = styled.div`
@@ -19,7 +20,7 @@ const ContentWrap = styled.div`
 	}
 `
 
-function Recommend(){
+function Recommend(props){
 
 	const {bannerList, recommendList, enterLoading} = useSelector(state=>({
 		bannerList: state.getIn(['recommend', 'bannerList']),
@@ -35,17 +36,21 @@ function Recommend(){
 
 	const bannerListJS = bannerList ? bannerList.toJS() : [];
 	const recommendListJS = recommendList ? recommendList.toJS() : [];
+	console.log(props,'----')
 	return (
-		<ContentWrap>
-			<Scroll onScroll={forceCheck}>
-				<div>
-					<Slider bannerList={bannerListJS} />
-					<RecommendList recommendList={recommendListJS} />
-					{ enterLoading && <Loading />}
-				</div>
-			</Scroll>
-			
-		</ContentWrap>
+		<div>
+			<ContentWrap>
+				<Scroll onScroll={forceCheck}>
+					<div>
+						<Slider bannerList={bannerListJS} />
+						<RecommendList recommendList={recommendListJS} />
+						{ enterLoading && <Loading />}
+					</div>
+				</Scroll>
+			</ContentWrap>
+			{renderRoutes(props.route.routes)}
+		</div>
+		
 	)
 }
 // 映射 Redux 全局的 state 到组件的 props 上
